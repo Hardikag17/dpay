@@ -8,4 +8,5 @@ body {
   color: white;
   font-family: 'Inter';
   overflow: hidden;
+  height: 100vh;
 }

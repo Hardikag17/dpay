@@ -28,7 +28,9 @@ export default function Body() {
       <div className=' py-10 z-10'>
         <div>
           <button
-            onClick={() => {}}
+            onClick={() => {
+              history.push('/dashboard');
+            }}
             className='bg-yellow hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center'>
             Confirm
           </button>
