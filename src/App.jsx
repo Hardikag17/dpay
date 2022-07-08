@@ -8,7 +8,13 @@ import Dashboard from './components/Body/dashboard.jsx';
 
 function App() {
   return (
-    <div>
+    <div
+    // className=' absolute h-screen w-screen'
+    // style={{
+    //   backgroundImage:
+    //     'radial-gradient(at left top, rgb(0, 0, 0), rgb(0, 0, 0), rgb(134, 25, 143))',
+    // }}
+    >
       <Router>
         <Navbar />
         <Suspense fallback={<div>Loading...</div>}>
