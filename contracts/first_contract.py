@@ -74,7 +74,10 @@ class UserInfo(sp.Contract):
     @sp.entry_point
     def addAmountToGroup(self, group_id):
         sp.set_type(group_id, sp.TNat)
-        
+
+        sp.verify(
+        self.data.groups[group_id].group_friends.contains(sp.sender),
+        "YOU_ARE_NOT_A_MEMBER_OF_THIS_GROUP"),
         # sp.send(sp.self_address, sp.amount),
         self.data.groups[group_id].balance += sp.amount
         
@@ -89,6 +92,16 @@ class UserInfo(sp.Contract):
 
         sp.send(sp.sender, params.amount),
         self.data.groups[params.group_id].balance -= params.amount
+
+
+    @sp.entry_point
+    def transferAmountToFriend(self, friend_id):
+        sp.set_type(friend_id,sp.TNat) 
+ 
+        sp.send(self.data.users[friend_id].user_address
+        ,sp.amount)
+     
+
 
        
                  
@@ -171,8 +184,14 @@ if "templates" not in __name__:
         friends = [ 2, 1]
         )
 
-        scenario.h2("Add Money")
+        scenario.h2("Add Money to group")
 
         c1.addAmountToGroup(
-        10
-        ).run(amount = sp.mutez(100000))     
+        11
+        ).run(amount = sp.mutez(100000), sender = tom )
+
+        scenario.h2("send money to friend")     
+
+        c1.transferAmountToFriend(
+        1
+        ).run(amount = sp.mutez(100000))
