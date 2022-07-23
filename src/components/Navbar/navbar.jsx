@@ -41,10 +41,12 @@ export default function Navbar() {
                 <Disclosure.Button as='a'>
                   <div className=' flex flex-col'>
                     <div>
-                      How it works{' '}
-                      <span className=' text-yellow text-right text-web_normal font-bold'>
-                        .
-                      </span>
+                      <button className='bg-yellow hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center'>
+                        Connect to wallet{' '}
+                        <span className=' text-yellow text-right text-web_normal font-bold'>
+                          .
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </Disclosure.Button>
