@@ -2,10 +2,9 @@ import { tezos, contractAddress } from './tezos';
 import { bytes2Char } from '@taquito/utils';
 
 export const fetchTezosDomainFromWalletAddressInContract = async (
-  address: string
-): Promise<string> => {
+) => {
   const contract = await tezos.wallet.at(contractAddress);
-  const storage: any = await contract.storage();
+  const storage = await contract.storage();
   const domain = await storage.store.reverse_records.get(address);
   if (domain) {
     return bytes2Char(domain.name);
