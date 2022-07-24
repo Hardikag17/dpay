@@ -1,58 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { TaquitoTezosDomainsClient } from "@tezos-domains/taquito-client";
-import { connectWallet, getAccount } from "../../utils/wallet.js";
+import { connectionContext } from "../../App";
 
-export default function Body({ tezos, wallet }) {
+export default function Body() {
   let history = useHistory();
+  const { connected, wallet, tezos } = useContext(connectionContext);
 
   const [currentName, setCurrentName] = useState("");
-
-  const client = new TaquitoTezosDomainsClient({
-    tezos: tezos,
-    network: "jakartanet",
-    caching: { enabled: true },
-  });
-
   const [address, setAddress] = useState("");
-  useEffect(async () => {
-    console.log(tezos);
-    const activeAccount = await wallet.client.getActiveAccount();
-    if (activeAccount) {
-      setAddress(activeAccount.address);
-    } else {
-      await wallet.requestPermissions({ network: { type: "jakartanet" } });
+  const [nameFound, setNameFound] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchAndResolveAddress() {
+      if (!connected) {
+        console.log("No Connection");
+        return;
+      }
+
+      setLoading(true);
       setAddress(await wallet.getPKH());
-    }
-    console.log(address);
-  }, []);
 
-  const validateName = async () => {
-    try {
-      setCurrentName("...CHECKING...");
-      const address = await client.resolver.resolveNameToAddress(
-        `${currentName}.tez`
-      );
-      if (address == null) {
-        throw Error("NotFound");
-      }
-      if (onConnectWallet() === address) {
-        console.log(`${currentName}: ${address} (Connection is Okay)`);
-        history.push("/dashboard");
-      } else {
-        alert("Please check the details entered");
-      }
-    } catch (err) {
-      console.log(err);
-      setCurrentName("INVALID");
-    }
-  };
+      const client = new TaquitoTezosDomainsClient({
+        tezos: tezos,
+        network: "jakartanet",
+        caching: { enabled: true },
+      });
 
-  const onConnectWallet = async () => {
-    await connectWallet();
-    const account = await getAccount();
-    return account;
-  };
+      try {
+        const fetchedName = await client.resolver.resolveAddressToName(address);
+        if (!fetchedName) {
+          setNameFound(false);
+          throw new Error();
+        }
+
+        setNameFound(true);
+        setCurrentName(fetchedName);
+        console.log(address);
+      } catch (err) {
+        setNameFound(false);
+        setCurrentName("No Name Found")
+        console.log("Unable to Resolve the address", err);
+      }
+
+      setLoading(false);
+    }
+    fetchAndResolveAddress();
+  }, [tezos, wallet, address, connected]);
 
   return (
     <div>
@@ -64,30 +59,49 @@ export default function Body({ tezos, wallet }) {
           Your identity must be verifed by tezos domains
         </div>
         <div className="lg:w-3/4 w-full">
-          <div className="bg-black flex items-center rounded-lg border-2 border-solid border-grey shadow-xl">
+          <div
+            className={
+              "bg-black flex items-center rounded-lg border-2 border-solid border-" +
+              (nameFound ? "green" : "red") +
+              "-500 shadow-xl"
+            }
+          >
             <input
               className="rounded-l bg-black w-full px-4 text-gray leading-tight focus:outline-none"
               id="search"
               type="text"
-              placeholder="alex"
               value={currentName}
+              disabled
               onChange={(e) => setCurrentName(e.target.value)}
             />
 
-            {/*Button? */}
-            <button className="text-gray rounded-lg border-2 border-solid border-grey focus:outline-none w-24 h-12 flex items-center justify-center">
+            <div
+              className={
+                "text-gray rounded-lg border-2 border-solid border-" +
+                (nameFound ? "green" : "red") +
+                "-500 focus:outline-none w-24 h-12 flex items-center justify-center"
+              }
+            >
               .tez
-            </button>
+            </div>
           </div>
         </div>
         <div className=" py-10 z-10">
           <div>
-            <button
-              onClick={validateName}
-              className="bg-yellow hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center"
-            >
-              Confirm
-            </button>
+            {!connected ? (
+              <button className="bg-red-500 hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center">
+                No Connection
+              </button>
+            ) : loading ? (
+              <div
+                class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                role="status"
+              />
+            ) : (
+              <button className="bg-yellow hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center">
+                {nameFound ? "Confirm" : "Register"}
+              </button>
+            )}
           </div>
         </div>
       </div>

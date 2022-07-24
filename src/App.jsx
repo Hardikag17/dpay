@@ -18,7 +18,16 @@ const Tezos = new TezosToolkit("https://jakartanet.smartpy.io");
 Tezos.addExtension(new Tzip16Module());
 Tezos.setWalletProvider(wallet);
 
+export const connectionContext = React.createContext({
+  conected: false,
+  setConnected: (status) => {},
+  wallet: wallet,
+  tezos: Tezos,
+});
+
 function App() {
+  const [connected, setConnected] = useState(false);
+
   return (
     <div
       className=" absolute h-screen w-screen"
@@ -28,15 +37,20 @@ function App() {
       }}
     >
       <Router>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Switch>
-            <Route exact path="/">
-              <Body tezos={Tezos} wallet={wallet} />
-            </Route>
-            <Route exact path="/dashboard" component={Dashboard} />
-          </Switch>
-        </Suspense>
-        <Footer />
+        <connectionContext.Provider
+          value={{ connected, setConnected, wallet, Tezos }}
+        >
+          <Navbar />
+          <Suspense fallback={<div>Loading...</div>}>
+            <Switch>
+              <Route exact path="/">
+                <Body tezos={Tezos} wallet={wallet} />
+              </Route>
+              <Route exact path="/dashboard" component={Dashboard} />
+            </Switch>
+          </Suspense>
+          <Footer />
+        </connectionContext.Provider>
       </Router>
     </div>
   );
