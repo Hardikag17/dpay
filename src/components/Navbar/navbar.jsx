@@ -1,13 +1,13 @@
 import { setArgs } from "@craco/craco/lib/args";
 import { Disclosure } from "@headlessui/react";
 import { XIcon, MenuIcon } from "@heroicons/react/outline";
-import { useContext } from "react";
+import { useContext, useEffect, useCallback } from "react";
 import { connectionContext } from "../../App";
 
 export default function Navbar() {
   const { connected, setConnected, wallet } = useContext(connectionContext);
 
-  const connect = async () => {
+  const connect = useCallback(async () => {
     const activeAccount = await wallet.client.getActiveAccount();
     if (activeAccount) {
       console.log("Already connected:", activeAccount.address);
@@ -17,12 +17,16 @@ export default function Navbar() {
       console.log("New connection:", myAddress);
     }
     setConnected(true);
-  };
+  }, [setConnected, wallet]);
 
   const disconnect = async () => {
     await wallet.clearActiveAccount();
     setConnected(false);
   };
+
+  useEffect(() => {
+    connect();
+  }, [connect]);
 
   return (
     <Disclosure as="nav">

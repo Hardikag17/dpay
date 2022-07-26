@@ -8,6 +8,9 @@ import Dashboard from "./components/Body/dashboard.jsx";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
+import { TaquitoTezosDomainsClient } from "@tezos-domains/taquito-client";
+import "tw-elements";
+import Register from "./components/Body/register.jsx";
 
 const wallet = new BeaconWallet({
   name: "dPay",
@@ -18,11 +21,18 @@ const Tezos = new TezosToolkit("https://jakartanet.smartpy.io");
 Tezos.addExtension(new Tzip16Module());
 Tezos.setWalletProvider(wallet);
 
+const client = new TaquitoTezosDomainsClient({
+  tezos: Tezos,
+  network: "jakartanet",
+  caching: { enabled: true },
+});
+
 export const connectionContext = React.createContext({
   conected: false,
   setConnected: (status) => {},
   wallet: wallet,
   tezos: Tezos,
+  client: client
 });
 
 function App() {
@@ -38,7 +48,7 @@ function App() {
     >
       <Router>
         <connectionContext.Provider
-          value={{ connected, setConnected, wallet, Tezos }}
+          value={{ connected, setConnected, wallet, Tezos, client }}
         >
           <Navbar />
           <Suspense fallback={<div>Loading...</div>}>
@@ -47,6 +57,7 @@ function App() {
                 <Body tezos={Tezos} wallet={wallet} />
               </Route>
               <Route exact path="/dashboard" component={Dashboard} />
+              <Route exact path="/register" component={Register} />
             </Switch>
           </Suspense>
           <Footer />

@@ -1,46 +1,76 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useState, useContext, useCallback } from "react";
 import { connectionContext } from "../../App";
+import {
+  getTld,
+  getLabel,
+  DomainNameValidationResult,
+  RecordMetadata,
+  generateNonce,
+} from "@tezos-domains/core";
 
-export default function Body() {
-  let history = useHistory();
-  const { connected, wallet, tezos, client } = useContext(connectionContext);
+export default function Register() {
+  const { connected, wallet, client } = useContext(connectionContext);
 
-  const [currentName, setCurrentName] = useState("");
-  const [address, setAddress] = useState("");
   const [nameFound, setNameFound] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [currentName, setCurrentName] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchAndResolveAddress() {
-      if (!connected) {
-        console.log("No Connection");
-        return;
-      }
-
-      setLoading(true);
-      setAddress(await wallet.getPKH());
-
-      try {
-        const fetchedName = await client.resolver.resolveAddressToName(address);
-        if (!fetchedName) {
-          setNameFound(false);
-          throw new Error();
-        }
-
-        setNameFound(true);
-        setCurrentName(fetchedName);
-        console.log(address);
-      } catch (err) {
-        setNameFound(false);
-        setCurrentName("No Name Found");
-        console.log("Unable to Resolve the address", err);
-      }
-
-      setLoading(false);
+  const buy = useCallback(async () => {
+    if (!connected) {
+      console.log("No Connection");
+      return;
     }
-    fetchAndResolveAddress();
-  }, [tezos, wallet, address, connected, client]);
+
+    setLoading(true);
+    const address = await wallet.getPKH();
+    const name = currentName + ".tez";
+
+    try {
+      if (
+        client.validator.validateDomainName(name) !==
+        DomainNameValidationResult.VALID
+      ) {
+        setCurrentName("Invalid Name");
+        throw new Error("Domain name not valid");
+      }
+
+      const existing = await client.resolver.resolveDomainRecord(name);
+      if (existing) {
+        setCurrentName("Already Taken");
+        throw new Error("Domain Name taken.");
+      }
+
+      const tld = getTld(name);
+      const label = getLabel(name);
+      const nonce = generateNonce();
+
+      const params = {
+        label,
+        owner: address,
+        nonce,
+      };
+
+      const commitOperation = await client.manager.commit(tld, params);
+      await commitOperation.confirmation();
+
+      const commitment = await client.manager.getCommitment(tld, params);
+      await commitment.waitUntilUsable();
+
+      const buyOperation = await client.manager.buy(tld, {
+        ...params,
+        duration: 365,
+        address: address,
+        data: new RecordMetadata(),
+      });
+      await buyOperation.confirmation();
+      console.log(`Domain ${name} has been registered.`);
+      setNameFound(true);
+    } catch (err) {
+      setNameFound(false);
+      console.log(err);
+    }
+    setLoading(false);
+  }, [client, wallet, currentName]);
 
   return (
     <div>
@@ -64,7 +94,6 @@ export default function Body() {
               id="search"
               type="text"
               value={currentName}
-              disabled
               onChange={(e) => setCurrentName(e.target.value)}
             />
 
@@ -90,25 +119,14 @@ export default function Body() {
                 class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
                 role="status"
               />
-            ) : nameFound ? (
+            ) : (
               <button
                 type="button"
-                onClick={() => {
-                  history.push("/dashboard");
-                }}
+                onClick={buy}
+                disabled={!nameFound}
                 className="bg-yellow hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center"
               >
                 Confirm
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  history.push("/register");
-                }}
-                type="button"
-                className="bg-yellow hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center"
-              >
-                Register
               </button>
             )}
           </div>
