@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import React, { Suspense, lazy, useState } from "react";
+import React, { Suspense, useState } from "react";
 //Components
 import Navbar from "./components/Navbar/navbar.jsx";
 import Body from "./components/Body/body.jsx";
