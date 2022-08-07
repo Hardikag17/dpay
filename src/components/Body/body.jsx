@@ -4,7 +4,7 @@ import { connectionContext } from "../../App";
 
 export default function Body() {
   let history = useHistory();
-  const { connected, wallet, tezos, client } = useContext(connectionContext);
+  const { connected, wallet, client } = useContext(connectionContext);
 
   const [currentName, setCurrentName] = useState("");
   const [address, setAddress] = useState("");
@@ -42,7 +42,7 @@ export default function Body() {
       setLoading(false);
     }
     fetchAndResolveAddress();
-  }, [tezos, wallet, address, connected, client]);
+  }, [wallet, address, connected, client]);
 
   const onConfirm = useCallback(async () => {
     if (!connected) {

@@ -6,10 +6,11 @@ import {
   RecordMetadata,
   generateNonce,
 } from "@tezos-domains/core";
+import { viewMethods } from "../../utils/contract";
 
 export default function Register() {
   let history = useHistory();
-  const { connected, wallet, client } = useContext(connectionContext);
+  const { connected, Tezos, wallet, client } = useContext(connectionContext);
 
   const [nameFound, setNameFound] = useState(true);
   const [currentName, setCurrentName] = useState("");
@@ -66,10 +67,11 @@ export default function Register() {
       history.push("/");
     } catch (err) {
       setNameFound(false);
+      viewMethods(Tezos);
       console.log(err);
     }
     setLoading(false);
-  }, [client, wallet, currentName, history, connected, currentTld]);
+  }, [client, wallet, currentName, Tezos, history, connected, currentTld]);
 
   return (
     <div>

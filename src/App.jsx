@@ -11,6 +11,7 @@ import { Tzip16Module } from "@taquito/tzip16";
 import { TaquitoTezosDomainsClient } from "@tezos-domains/taquito-client";
 import "tw-elements";
 import Register from "./components/Body/register.jsx";
+import { register, viewMethods } from "./utils/contract.js";
 
 const wallet = new BeaconWallet({
   name: "dPay",
@@ -31,12 +32,20 @@ export const connectionContext = React.createContext({
   conected: false,
   setConnected: (status) => {},
   wallet: wallet,
-  tezos: Tezos,
+  Tezos: Tezos,
   client: client
 });
 
 function App() {
   const [connected, setConnected] = useState(false);
+//Tezos.contract
+//    .at("KT1HqoKg6mtwYyjiHXRcP8NWcXhtvT973ZZF")
+//    .then((c) => {
+//      let methods = c.parameterSchema.ExtractSignatures();
+//      console.log(methods);
+//    })
+//    .catch((err) => console.log(err));
+//
 
   return (
     <div
