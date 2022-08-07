@@ -1,85 +1,86 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import { useState, useContext, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { connectionContext } from "../../App";
+import {
+  DomainNameValidationResult,
+  RecordMetadata,
+  generateNonce,
+} from "@tezos-domains/core";
+import { viewMethods } from "../../utils/contract";
 
-export default function Body() {
+export default function Register() {
   let history = useHistory();
-  const { connected, wallet, client } = useContext(connectionContext);
+  const { connected, Tezos, wallet, client } = useContext(connectionContext);
 
-  const [currentName, setCurrentName] = useState("");
-  const [address, setAddress] = useState("");
   const [nameFound, setNameFound] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [currentName, setCurrentName] = useState("");
+  const [loading, setLoading] = useState(false);
   const [currentTld, setCurrentTld] = useState(
     client.validator.supportedTLDs[0]
   );
 
-  useEffect(() => {
-    async function fetchAndResolveAddress() {
-      if (!connected) {
-        console.log("No Connection");
-        return;
-      }
-
-      setLoading(true);
-      setAddress(await wallet.getPKH());
-
-      try {
-        const fetchedName = await client.resolver.resolveAddressToName(address);
-        if (!fetchedName) {
-          setNameFound(false);
-          throw new Error();
-        }
-
-        setNameFound(true);
-        setCurrentName(fetchedName);
-        console.log(address);
-      } catch (err) {
-        setNameFound(false);
-        console.log("Unable to Resolve the address", err);
-      }
-
-      setLoading(false);
-    }
-    fetchAndResolveAddress();
-  }, [wallet, address, connected, client]);
-
-  const onConfirm = useCallback(async () => {
+  const buy = useCallback(async () => {
     if (!connected) {
       console.log("No Connection");
       return;
     }
 
     setLoading(true);
-
+    const address = await wallet.getPKH();
     try {
-      const resolvedAddress = await client.resolver.resolveNameToAddress(
-        `${currentName}.${currentTld}`
-      );
-
-      if (resolvedAddress !== address) {
-        console.log(resolvedAddress);
-        throw new Error("Name/Address mismatch");
+      if (
+        client.validator.validateDomainName(`${currentName}.${currentTld}`) !==
+        DomainNameValidationResult.VALID
+      ) {
+        setCurrentName("Invalid Name");
+        throw new Error("Domain name not valid");
       }
 
+      const existing = await client.resolver.resolveDomainRecord(currentName);
+      if (existing) {
+        setCurrentName("Already Taken");
+        throw new Error("Domain Name taken.");
+      }
+
+      const label = currentName;
+      const nonce = generateNonce();
+
+      const params = {
+        label,
+        owner: address,
+        nonce,
+      };
+
+      const commitOperation = await client.manager.commit(currentTld, params);
+      await commitOperation.confirmation();
+
+      const buyOperation = await client.manager.buy(currentTld, {
+        ...params,
+        duration: 365,
+        address: address,
+        data: new RecordMetadata(),
+        nonce,
+      });
+      await buyOperation.confirmation();
+      console.log(`Domain ${currentName} has been registered.`);
       setNameFound(true);
-      history.push("/dashboard");
+      history.push("/");
     } catch (err) {
       setNameFound(false);
-      console.log("Invalid Name", err);
+      viewMethods(Tezos);
+      console.log(err);
     }
-
     setLoading(false);
-  }, [address, client, connected, currentName, history, currentTld]);
+  }, [client, wallet, currentName, Tezos, history, connected, currentTld]);
 
   return (
     <div>
       <div className=" flex h-screen flex-col lg:mx-64 mx-auto lg:my-10 my-24 lg:px-4 lg:w-1/2 w-10/12">
         <div className=" lg:text-web_title text-mobile_title">
-          Verify your Identity
+          Register New Domain
         </div>
         <div className="text-grey py-5 lg:px-2 text-small lg:w-3/4 w-full">
-          Your identity must be verifed by tezos domains
+          Select a Unique Domain Name
         </div>
         <div className="lg:w-3/4 w-full">
           <div
@@ -94,10 +95,8 @@ export default function Body() {
               id="search"
               type="text"
               value={currentName}
-              disabled={loading}
               onChange={(e) => setCurrentName(e.target.value)}
             />
-
             <div className="dropdown relative">
               <button
                 className={
@@ -175,7 +174,7 @@ export default function Body() {
         <div className=" py-10 z-10">
           <div>
             {!connected ? (
-              <button className="bg-red-500 disabled hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center">
+              <button className="bg-red-500 hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center">
                 No Connection
               </button>
             ) : loading ? (
@@ -184,24 +183,14 @@ export default function Body() {
                 role="status"
               />
             ) : (
-              <div className="flex gap-10">
-                <button
-                  type="button"
-                  onClick={onConfirm}
-                  className="bg-yellow hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center"
-                >
-                  Confirm
-                </button>
-                <button
-                  onClick={() => {
-                    history.push("/register");
-                  }}
-                  type="button"
-                  className="bg-yellow hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center"
-                >
-                  Register
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={buy}
+                disabled={!nameFound}
+                className="bg-yellow hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center"
+              >
+                Confirm
+              </button>
             )}
           </div>
         </div>
