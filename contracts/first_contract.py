@@ -33,8 +33,13 @@ class UserInfo(sp.Contract):
 
     @sp.entry_point
     def register(self, params):
+        # sp.verify(
+        # params.status == False,
+        # "ALREADY_A_USER"),
+
         self.data.users[self.data.all_users] = sp.record(
             user_friends =sp.set() ,
+            
             user_groups = sp.set(),
             user_name = params.user_name,
             user_bio = params.user_bio,
@@ -102,7 +107,10 @@ class UserInfo(sp.Contract):
         ,sp.amount)
      
 
-
+    @sp.entry_point
+    def set_delegate(self, address):
+        sp.set_type(address, sp.TOption(sp.TKeyHash))
+        sp.set_delegate(address)
        
                  
 
@@ -135,24 +143,27 @@ if "templates" not in __name__:
         # Call register entry point
         c1.register(
             user_name = "alice",
-            user_bio = "Heyy there!"
+            user_bio = "Heyy there!",
         ).run(sender = alice)
 
 
         scenario.h2("Register another user")
         c1.register(
             user_name = "bob",
-            user_bio = "Hii I'm new to Tezos"
+            user_bio = "Hii I'm new to Tezos",
+          
         ).run(sender = bob)
 
         c1.register(
             user_name = "tom",
-            user_bio = "Hi there!"
+            user_bio = "Hi there!",
+           
         ).run(sender = tom)
 
         c1.register(
             user_name = "lucy",
-            user_bio = "Heyy there!"
+            user_bio = "Heyy there!",
+           
         ).run(sender = lucy)
 
         scenario.h2("Add Friend")
@@ -195,3 +206,9 @@ if "templates" not in __name__:
         c1.transferAmountToFriend(
         1
         ).run(amount = sp.mutez(100000))
+
+        scenario.h2("delegate")
+
+        # c1.set_delegate(
+        # address here
+        # ).run(amount = sp.mutez(100000))
