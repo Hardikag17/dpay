@@ -33,6 +33,8 @@ class UserInfo(sp.Contract):
 
     @sp.entry_point
     def register(self, params):
+
+        # hii
         # sp.verify(
         # params.status == False,
         # "ALREADY_A_USER"),
