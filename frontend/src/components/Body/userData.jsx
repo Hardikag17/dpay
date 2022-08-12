@@ -20,7 +20,7 @@ function reducer(state, message) {
   };
 }
 
-export default function UserDate({state}) {
+export default function UserDate({ friendState }) {
   // the form state manages the form input for creating a new message
   const [formState, setForm] = useState({
     name: "",
@@ -65,7 +65,6 @@ export default function UserDate({state}) {
   const [currentAmount, setCurrentAmount] = useState(0);
 
   const { Tezos } = useContext(connectionContext);
-
   const take = async () => {
     setCurrentAmount(
       await withdraw(Tezos).catch((e) => {
@@ -82,8 +81,64 @@ export default function UserDate({state}) {
 
   return (
     <div className=" w-full flex flex-col">
+      <div
+        className="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto"
+        id="amountexampleModalCenter"
+        tabIndex="-1"
+        aria-labelledby="amountexampleModalCenterTitle"
+        aria-modal="true"
+        role="dialog"
+      >
+        <div className="modal-dialog modal-dialog-centered relative w-auto pointer-events-none">
+          <div className="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-black bg-clip-padding rounded-md outline-none text-current">
+            <div className="modal-header flex flex-col flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+              <h2
+                className="text-2xl font-medium leading-normal text-yellow"
+                id="amountexampleModalScrollableLabel"
+              >
+                Enter Username
+              </h2>
+            </div>
+            <div class="modal-body relative p-4">
+              <div
+                className={
+                  "bg-black flex items-center rounded-lg border-2 border-solid border-green-500 shadow-xl"
+                }
+              >
+                <input
+                  className="rounded-l bg-black w-full px-4 text-gray leading-tight focus:outline-none"
+                  id="search"
+                  type="text"
+                  value={currentAmount}
+                  onChange={(e) => setCurrentAmount(e.target.value)}
+                />
+              </div>
+            </div>
+            <div class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-evenly p-4 border-t border-gray-200 rounded-b-md">
+              <button
+                type="button"
+                className="bg-red-500 hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="bg-yellow hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center"
+              >
+                Proceed
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className=" h-72 flex flex-row border-solid border-grey border-2 w-full">
-        <div className=" text-left flex items-center w-full font-bold p-1 text-web_large px-2">
+        <div
+          data-bs-toggle="modal"
+          data-bs-target="#amountexampleModalCenter"
+          className=" text-left flex items-center w-full font-bold p-1 text-web_large px-2"
+        >
           Current Balance: {currentAmount} Tez
         </div>
         <div className=" flex flex-row justify-end">

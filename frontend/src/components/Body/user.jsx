@@ -1,33 +1,35 @@
 import { useState } from "react";
 
-export default function User({ state }) {
-  const groups = [
-    { group_name: "Hello", balance: 0 },
-    { group_name: "Hello", balance: 0 },
-    { group_name: "Hello", balance: 0 },
-    { group_name: "Hello", balance: 0 },
-    { group_name: "Hello", balance: 0 },
-    { group_name: "Hello", balance: 0 },
-    { group_name: "Hello", balance: 0 },
-    { group_name: "Hello", balance: 0 },
-    { group_name: "Hello", balance: 0 },
-  ];
-
-  const friends = [
-    { user_name: "ceniei", user_bio: "hello world" },
-    { user_name: "ceniei", user_bio: "hello world" },
-    { user_name: "ceniei", user_bio: "hello world" },
-    { user_name: "ceniei", user_bio: "hello world" },
-    { user_name: "ceniei", user_bio: "hello world" },
-    { user_name: "ceniei", user_bio: "hello world" },
-    { user_name: "ceniei", user_bio: "hello world" },
-    { user_name: "ceniei", user_bio: "hello world" },
-    { user_name: "ceniei", user_bio: "hello world" },
-  ];
-
+export default function User({ state, groups, friends }) {
+  console.log(groups, friends)
+//  const groups = [
+//    { group_name: "Hello", balance: 0 },
+//    { group_name: "Hello", balance: 0 },
+//    { group_name: "Hello", balance: 0 },
+//    { group_name: "Hello", balance: 0 },
+//    { group_name: "Hello", balance: 0 },
+//    { group_name: "Hello", balance: 0 },
+//    { group_name: "Hello", balance: 0 },
+//    { group_name: "Hello", balance: 0 },
+//    { group_name: "Hello", balance: 0 },
+//  ];
+//
+//  const friends = [
+//    { user_name: "ceniei", user_bio: "hello world" },
+//    { user_name: "ceniei", user_bio: "hello world" },
+//    { user_name: "ceniei", user_bio: "hello world" },
+//    { user_name: "ceniei", user_bio: "hello world" },
+//    { user_name: "ceniei", user_bio: "hello world" },
+//    { user_name: "ceniei", user_bio: "hello world" },
+//    { user_name: "ceniei", user_bio: "hello world" },
+//    { user_name: "ceniei", user_bio: "hello world" },
+//    { user_name: "ceniei", user_bio: "hello world" },
+//  ];
+//
   return (
     <div className="text-white w-full rounded-3xl p-2 overflow-y-auto hover:brightness-125 hover:scale-110 cursor-pointer flex items-center justify-center">
       <div className="flex flex-col w-full items-center justify-center overflow-y-auto">
+
         {/*
         <div className="inline-flex" role="group">
           <button

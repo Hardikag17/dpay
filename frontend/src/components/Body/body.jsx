@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { connectionContext } from "../../App";
-import { register } from "../../utils/contract";
+import { checkMembership, register } from "../../utils/contract";
 import Navbar from "../Navbar/navbar";
 
 export default function Body() {
   let history = useHistory();
-  const { connected, wallet, client, Tezos } = useContext(connectionContext);
+  const { connected, wallet, client, Tezos, setUserName } =
+    useContext(connectionContext);
 
   const [currentName, setCurrentName] = useState("");
   const [address, setAddress] = useState("");
@@ -15,36 +16,6 @@ export default function Body() {
   const [currentTld, setCurrentTld] = useState(
     client.validator.supportedTLDs[0]
   );
-
-  //  useEffect(() => {
-  //async function fetchAndResolveAddress() {
-  //if (!connected) {
-  //console.log('No Connection');
-  //return;
-  //}
-
-  //setLoading(true);
-  //setAddress(await wallet.getPKH());
-
-  //try {
-  //const fetchedName = await client.resolver.resolveAddressToName(address);
-  //if (!fetchedName) {
-  //setNameFound(false);
-  //throw new Error();
-  //}
-
-  //setNameFound(true);
-  //setCurrentName(fetchedName);
-  //console.log(address);
-  //} catch (err) {
-  //setNameFound(false);
-  //console.log('Unable to Resolve the address', err);
-  //}
-
-  //setLoading(false);
-  //}
-  //fetchAndResolveAddress();
-  //}, [wallet, address, connected, client]);
 
   useEffect(() => {
     async function fetchAdd() {
@@ -67,6 +38,7 @@ export default function Body() {
     setLoading(true);
 
     try {
+      const finalName = `${currentName}${currentTld}`;
       const resolvedAddress = await client.resolver.resolveNameToAddress(
         `${currentName}.${currentTld}`
       );
@@ -80,7 +52,12 @@ export default function Body() {
       setNameFound(true);
 
       const userBio = "Hey there! I am using Dpay.";
-      await register(Tezos, currentName, userBio);
+
+      if (!(await checkMembership(Tezos, finalName)))
+        await register(Tezos, finalName, userBio);
+      else console.log("already registered");
+
+      setUserName(finalName);
       history.push("/dashboard");
     } catch (err) {
       setNameFound(false);
@@ -88,7 +65,16 @@ export default function Body() {
     } finally {
       setLoading(false);
     }
-  }, [address, client, Tezos, connected, currentName, history, currentTld]);
+  }, [
+    address,
+    client,
+    Tezos,
+    connected,
+    currentName,
+    history,
+    currentTld,
+    setUserName,
+  ]);
 
   return (
     <div>

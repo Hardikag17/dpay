@@ -29,6 +29,8 @@ const client = new TaquitoTezosDomainsClient({
 });
 
 export const connectionContext = React.createContext({
+  userName: "", 
+  setUserName: (status) => {},
   conected: false,
   setConnected: (status) => {},
   wallet: wallet,
@@ -38,17 +40,17 @@ export const connectionContext = React.createContext({
 
 function App() {
   const [connected, setConnected] = useState(false);
-  viewMethods(Tezos);
+  const [userName, setUserName] = useState("");
 
   return (
     <div className=' absolute h-screen w-screen'>
       <Router>
         <connectionContext.Provider
-          value={{ connected, setConnected, wallet, Tezos, client }}>
+          value={{ connected, setConnected, wallet, Tezos, client, userName, setUserName }}>
           <Suspense fallback={<div>Loading...</div>}>
             <Switch>
               <Route exact path='/'>
-                <Body tezos={Tezos} wallet={wallet} />
+                <Body />
               </Route>
               <Route exact path='/dashboard' component={Dashboard} />
               <Route exact path='/register' component={Register} />
