@@ -7,8 +7,8 @@ class UserInfo(sp.Contract):
             all_groups = sp.nat(10),
 
 
-            users = sp.big_map( tkey = sp.TNat, tvalue = sp.TRecord( 
-            user_friends = sp.TSet(sp.TAddress), 
+            users = sp.big_map( tkey = sp.TString, tvalue = sp.TRecord( 
+            user_friends = sp.TSet(sp.TString), 
             user_groups = sp.TSet(sp.TNat),
             user_name = sp.TString, 
             user_bio = sp.TString, 
@@ -19,7 +19,7 @@ class UserInfo(sp.Contract):
             tkey = sp.TNat,
             tvalue = sp.TRecord(
             group_name = sp.TString,
-            group_friends = sp.TSet(sp.TAddress),
+            group_friends = sp.TSet(sp.TString),
             balance = sp.TMutez,
             staking_amount = sp.TMutez
 
@@ -33,13 +33,11 @@ class UserInfo(sp.Contract):
 
     @sp.entry_point
     def register(self, params):
-
-        # hii
         # sp.verify(
         # params.status == False,
         # "ALREADY_A_USER"),
 
-        self.data.users[self.data.all_users] = sp.record(
+        self.data.users[params.user_name] = sp.record(
             user_friends =sp.set() ,
             
             user_groups = sp.set(),
@@ -52,20 +50,24 @@ class UserInfo(sp.Contract):
    
     @sp.entry_point
     def addFriend(self, params):
-        self.data.users[params.id].user_friends.add(
-        self.data.users[params.friend_id].user_address ) 
+        sp.set_type(params,sp.TRecord( 
+        user_name = sp.TString, 
+        friend_name = sp.TString,
+        ))
+        self.data.users[params.user_name].user_friends.add(
+        params.friend_name) 
 
 
     @sp.entry_point
     def make_group(self, params):
         sp.set_type(params,sp.TRecord( 
         group_name = sp.TString, 
-        friends = sp.TList(sp.TNat),
+        friends = sp.TList(sp.TString),
         ))
 
         group_friends = sp.local('group_friends', sp.set())
         sp.for friend in params.friends: 
-            group_friends.value.add(self.data.users[friend].user_address) 
+            group_friends.value.add(friend) 
 
         self.data.groups[self.data.all_groups] = sp.record(
             group_name = params.group_name,
@@ -82,9 +84,9 @@ class UserInfo(sp.Contract):
     def addAmountToGroup(self, group_id):
         sp.set_type(group_id, sp.TNat)
 
-        sp.verify(
-        self.data.groups[group_id].group_friends.contains(sp.sender),
-        "YOU_ARE_NOT_A_MEMBER_OF_THIS_GROUP"),
+        # sp.verify(
+        # self.data.groups[group_id].group_friends.contains(sp.sender),
+        # "YOU_ARE_NOT_A_MEMBER_OF_THIS_GROUP"),
         # sp.send(sp.self_address, sp.amount),
         self.data.groups[group_id].balance += sp.amount
         
@@ -96,17 +98,19 @@ class UserInfo(sp.Contract):
         amount = sp.TMutez 
         
         ))
-
+        # sp.verify(
+        # self.data.groups[params.group_id].group_friends.contains(sp.sender),
+        # "YOU_ARE_NOT_A_MEMBER_OF_THIS_GROUP"),
         sp.send(sp.sender, params.amount),
         self.data.groups[params.group_id].balance -= params.amount
 
 
     @sp.entry_point
-    def transferAmountToFriend(self, friend_id):
-        sp.set_type(friend_id,sp.TNat) 
+    def transferAmountToFriend(self, friend_name):
+        sp.set_type(friend_name,sp.TString) 
  
-        sp.send(self.data.users[friend_id].user_address
-        ,sp.amount)
+        sp.send(self.data.users[friend_name].user_address,
+        sp.amount)
      
 
     @sp.entry_point
@@ -114,7 +118,18 @@ class UserInfo(sp.Contract):
         sp.set_type(address, sp.TOption(sp.TKeyHash))
         sp.set_delegate(address)
        
-                 
+    # @sp.entry_point
+    # def show_friends(self,user_id):
+    #     sp.set_type(user_id,sp.TNat)        
+
+    #     return self.data.users[user_id].user_friends 
+
+
+    # @sp.entry_point
+    # def show_groups(self,user_id):
+    #     sp.set_type(user_id,sp.TNat)        
+
+    #     return self.data.users[user_id].user_groups            
 
 if "templates" not in __name__:
     @sp.add_test(name = "StoreValue")
@@ -171,30 +186,30 @@ if "templates" not in __name__:
         scenario.h2("Add Friend")
 
         c1.addFriend(
-          id = 1,
-          friend_id = 2
+          user_name = "bob",
+          friend_name = "alice"
         ).run(sender = bob)
 
         c1.addFriend(
-          id = 1,
-          friend_id = 0
+          user_name = "bob",
+          friend_name ="lucy"
         ).run(sender = bob)
 
         c1.addFriend(
-          id = 1,
-          friend_id = 1
+          user_name =  "bob",
+          friend_name ="tom"
         ).run(sender = bob) 
 
         scenario.h2("Make group")
 
         c1.make_group(
         group_name = "GROUP 1",
-        friends = [ 0, 3]
+        friends = ["alice", "bob"]
         ) 
 
         c1.make_group(
         group_name = "GROUP 2",
-        friends = [ 2, 1]
+        friends = ["tom", "lucy"]
         )
 
         scenario.h2("Add Money to group")
@@ -206,7 +221,7 @@ if "templates" not in __name__:
         scenario.h2("send money to friend")     
 
         c1.transferAmountToFriend(
-        1
+        "bob"
         ).run(amount = sp.mutez(100000))
 
         scenario.h2("delegate")
