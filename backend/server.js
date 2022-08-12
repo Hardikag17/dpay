@@ -2,7 +2,7 @@ const express = require('express');
 const Gun = require('gun');
 const cors = require('cors');
 const app = express();
-const port = process.env.PORT || 9000;
+const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(Gun.serve);
