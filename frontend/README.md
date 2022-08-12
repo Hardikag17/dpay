@@ -1,70 +1,80 @@
-# Getting Started with Create React App
+## Dpay
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> Dpay is a Defi-based solution for sending, receiving & sharing cryptocurrencies with anyone around the world easily with just a simple click. It also provides the facility to stake your amount collectively if you don’t require them for more than 15 days and consequently earn rewards on them
 
-## Available Scripts
+## 🧵 Our Solution
 
-In the project directory, you can run:
+_Overview_
 
-### `npm start`
+Any user on the web with .tez domain can easily use our platform
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Dpay’s primarily main two features are:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Share (pots): Users will be able to share their business's funds or birthday party funds by smoothly making joint accounts (pots) between any number of people. Just like WhatsApp groups but for sharing crypto.
 
-### `npm test`
+2. Send: Users will be able to send and receive cryptocurrencies to anyone with just their .tez domains.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 💡 Inspiration
 
-### `npm run build`
+These days, everyone is talking about cryptocurrencies and the Indian government accepting them is all over the news. Now, to get it accepted by the people we need to make sure that everyone can easily access them and use them for their everyday payment-related services. Dpay does this, it brings the people and power of blockchain together. For using Dpay, people need not require any knowledge of blockchain. They can simply start using it like they use any other payment services like Gpay or PayPal. In the coming future, we are going to launch the app too.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## List of problems
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- It removes the need to know each other’s wallet addresses to send crypto. Users will be able to invite people and share crypto using tezos domains
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Currently, it’s really a tedious task to share cryptocurrency with your friends and family. let's say you want your family's total crypto assets or your total business funds, your friend's birthday funds in one place, So, that they can be used by anyone among the authorized personnel whenever required, Doing this is not possible. Let’s make it flexible to share and manage all family, friends, and business funds in one place by collecting them in pots. Basically, through the Dpay platform, you can make a joint account (pot) between any number of people, and they all can easily take/send crypto to the account
 
-### `npm run eject`
+## List of Features, Offers by DPay
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+✔️ Send, Receive & Share tezos between your friends and family by just knowing their tezos domains.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+✔️ Stake your tezos when you are not using them to earn rewards.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 💻 Tech stack
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Smart-Py (for Smart contract)
+Reactjs & Tailwind CSS (for frontend stack)
+Taquito (For the integration of smart contract and frontend)
+Tezos domain API (For getting domains from wallet address)
 
-## Learn More
+## ☑️ Installing
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+A step by step guide to locally run the DApp
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Clone this repository:
 
-### Code Splitting
+```
+git clone https://github.com/Hardikag17/dpay
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- Install all the required packages using the following command
 
-### Analyzing the Bundle Size
+```
+yarn
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Create a `.env` file and store the following contents in it and include API keys:
 
-### Making a Progressive Web App
+```
+MNEMONIC="<Enter your temple wallet seed phrase here to run locally>"
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- To launch the DApp, use the following command:
 
-### Advanced Configuration
+```
+yarn run dev
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Smart Contract
 
-### Deployment
+- ERC4907: (KT1HqoKg6mtwYyjiHXRcP8NWcXhtvT973ZZF)[https://jakartanet.tzkt.io/KT1HqoKg6mtwYyjiHXRcP8NWcXhtvT973ZZF/operations/]
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🙌 Team - **DTech**
 
-### `npm run build` fails to minify
+- **Hardik Agarwal** [(@Hardikag17)](https://github.com/Hardikag17)
+- **Tushar Sharma**[(@CeNiEi)](https://github.com/CeNiEi)
+- **Vaishnavi Sawai**[(@Tzark)](https://github.com/vaishnavi-sawai)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+We express our sincere gratitude to TezAisa hackathon for giving us such a great opportunity. We had an awesome experience we learned a lot.
+
+<br/>

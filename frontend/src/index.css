@@ -5,10 +5,6 @@
 html,
 body {
   background-color: #1e1e1e;
-  background-image: url(./assets/bg.jpg);
-  background-position: center;
-  background-size: cover;
-  background-blend-mode: overlay;
   color: white;
   font-family: 'Josefin Sans';
   height: 100vh;

@@ -25,6 +25,8 @@ export default function UserDate() {
     message: '',
   });
 
+  localStorage.clear();
+
   // initialize the reducer & state for holding the messages array
   const [state, dispatch] = useReducer(reducer, initialState);
 
