@@ -38,6 +38,7 @@ export const connectionContext = React.createContext({
 
 function App() {
   const [connected, setConnected] = useState(false);
+  viewMethods(Tezos);
 
   return (
     <div className=' absolute h-screen w-screen'>

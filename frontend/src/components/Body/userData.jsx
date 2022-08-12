@@ -1,9 +1,11 @@
-import { useEffect, useState, useReducer } from 'react';
-import Gun from 'gun';
+import { useEffect, useState, useReducer, useContext } from "react";
+import Gun from "gun";
+import { connectionContext } from "../../App";
+import { addAmountToGroup, withdraw } from "../../utils/contract";
 
 // initialize gun locally
 const gun = Gun({
-  peers: ['http://localhost:5000/gun'],
+  peers: ["http://localhost:5000/gun"],
 });
 
 // create the initial state to hold the messages
@@ -18,11 +20,11 @@ function reducer(state, message) {
   };
 }
 
-export default function UserDate() {
+export default function UserDate({state}) {
   // the form state manages the form input for creating a new message
   const [formState, setForm] = useState({
-    name: '',
-    message: '',
+    name: "",
+    message: "",
   });
 
   // initialize the reducer & state for holding the messages array
@@ -31,7 +33,7 @@ export default function UserDate() {
   // when the app loads, fetch the current messages and load them into the state
   // this also subscribes to new data as it changes and updates the local state
   useEffect(() => {
-    const messages = gun.get('messages');
+    const messages = gun.get("messages");
     messages.map().on((m) => {
       dispatch({
         name: m.name,
@@ -43,15 +45,15 @@ export default function UserDate() {
 
   // set a new message in gun, update the local state to reset the form field
   function saveMessage() {
-    const messages = gun.get('messages');
+    const messages = gun.get("messages");
     messages.set({
       name: formState.name,
       message: formState.message,
       createdAt: Date.now(),
     });
     setForm({
-      name: '',
-      message: '',
+      name: "",
+      message: "",
     });
   }
 
@@ -60,58 +62,87 @@ export default function UserDate() {
     setForm({ ...formState, [e.target.name]: e.target.value });
   }
 
+  const [currentAmount, setCurrentAmount] = useState(0);
+
+  const { Tezos } = useContext(connectionContext);
+
+  const take = async () => {
+    setCurrentAmount(
+      await withdraw(Tezos).catch((e) => {
+        console.log(e);
+      })
+    );
+  };
+
+  const put = async () => {
+    setCurrentAmount(await addAmountToGroup(Tezos));
+  };
+
+  const stake = async () => {};
+
   return (
-    <div className=' w-full flex flex-col'>
-      <div className=' h-72 flex flex-row border-solid border-grey border-2 w-full'>
-        <div className=' text-left flex items-center w-full font-bold p-1 text-web_large px-2'>
-          Current Balance: 500 Tez
+    <div className=" w-full flex flex-col">
+      <div className=" h-72 flex flex-row border-solid border-grey border-2 w-full">
+        <div className=" text-left flex items-center w-full font-bold p-1 text-web_large px-2">
+          Current Balance: {currentAmount} Tez
         </div>
-        <div className=' flex flex-row justify-end'>
-          <button class='text-gray rounded-lg border-2 m-1 border-solid border-grey focus:outline-none w-24 h-12 '>
+        <div className=" flex flex-row justify-end">
+          <button
+            onClick={take}
+            class="text-gray rounded-lg border-2 m-1 border-solid border-grey focus:outline-none w-24 h-12 "
+          >
             Take
           </button>
-          <button class='text-gray rounded-lg border-2 m-1 border-solid border-grey focus:outline-none w-24 h-12 '>
+          <button
+            onClick={put}
+            class="text-gray rounded-lg border-2 m-1 border-solid border-grey focus:outline-none w-24 h-12 "
+          >
             Put
           </button>
-          <button class='text-gray rounded-lg border-2 m-1 border-solid border-grey focus:outline-none w-24 h-12 '>
+          <button
+            onClick={stake}
+            class="text-gray rounded-lg border-2 m-1 border-solid border-grey focus:outline-none w-24 h-12 "
+          >
             Stake
           </button>
         </div>
       </div>
-      <div className='flex flex-col mx-5'>
-        <div className='text-grey py-2 lg:px-2 text-small text-center w-full'>
-          <div className='h-96 flex flex-wrap overflow-y-scroll snap snap-y snap-mandatory hide-scroll-bar justify-center w-full items-center mx-auto'>
+      <div className="flex flex-col mx-5">
+        <div className="text-grey py-2 lg:px-2 text-small text-center w-full">
+          <div className="h-96 flex flex-wrap overflow-y-scroll snap snap-y snap-mandatory hide-scroll-bar justify-center w-full items-center mx-auto">
             {state.messages.map((message) => (
               <div
-                className='flex-shrink-0 flex-col snap-always snap-center w-full mx-auto bg-white my-2 rounded-lg text-black'
-                key={message.createdAt}>
-                <div className=' flex flex-row space-x-4 '>
+                className="flex-shrink-0 flex-col snap-always snap-center w-full mx-auto bg-white my-2 rounded-lg text-black"
+                key={message.createdAt}
+              >
+                <div className=" flex flex-row space-x-4 ">
                   <h3>From: {message.name}</h3>
                   <p>Date: {message.createdAt}</p>
                 </div>
                 <div>
-                  <h2 className=' text-web_large'>{message.message}</h2>
+                  <h2 className=" text-web_large">{message.message}</h2>
                 </div>
               </div>
             ))}
           </div>
           <i>Your Chats are end to end encrypted</i>
         </div>
-        <div class='absolute bg-black rounded-full w-4/6 right-0 bottom-0 flex items-center border-2 border-solid border-grey shadow-xl'>
+        <div class="absolute bg-black rounded-full w-4/6 right-0 bottom-0 flex items-center border-2 border-solid border-grey shadow-xl">
           <input
-            className='rounded-l text-small bg-black w-full px-4 text-gray leading-tight focus:outline-none'
-            id='search'
-            type='text'
-            placeholder='Type you chats'
+            className="rounded-l text-small bg-black w-full px-4 text-gray leading-tight focus:outline-none"
+            id="search"
+            type="text"
+            placeholder="Type you chats"
             onChange={onChange}
-            name='message'
+            name="message"
             value={formState.message}
           />
           <button
             onClick={saveMessage}
-            class='text-gray rounded-full  border-2 border-solid border-grey focus:outline-none w-24 h-12 flex items-center justify-center'>
-            send{' '}
-            <span className=' text-yellow text-right text-web_normal font-bold'>
+            class="text-gray rounded-full  border-2 border-solid border-grey focus:outline-none w-24 h-12 flex items-center justify-center"
+          >
+            send{" "}
+            <span className=" text-yellow text-right text-web_normal font-bold">
               .
             </span>
           </button>
