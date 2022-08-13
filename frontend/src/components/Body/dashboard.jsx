@@ -474,7 +474,7 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
-        <div className="m-1 overflow-y-auto w-full">
+        <div className="m-1 overflow-y-auto w-full h-full">
           {!fetching ? (
             <User state={state} groups={groups} friends={friends} />
           ) : (

@@ -75,6 +75,7 @@ export default function UserDate() {
     currentGroupAmount,
     currentGroupName,
     setCurrentGroupAmount,
+    wallet,
   } = useContext(connectionContext);
 
   const [loading, setLoading] = useState(false);
@@ -85,9 +86,7 @@ export default function UserDate() {
       if (currentAmount > currentGroupAmount)
         throw new Error("Insuffficient Balance");
       setLoading(true);
-      setCurrentGroupAmount(
-        (await withdraw(Tezos, currentAmount, currentGroup)).toNumber() / 1000000
-      );
+      setCurrentGroupAmount(await withdraw(Tezos, currentAmount, currentGroup));
     } catch (err) {
       console.log("Unable to withdraw", err);
     } finally {
@@ -99,11 +98,8 @@ export default function UserDate() {
   const put = async () => {
     try {
       setLoading(true);
-      setCurrentGroupAmount(
-        (
-          await addAmountToGroup(Tezos, currentGroup, currentAmount)
-        ).toNumber() / 1000000
-      );
+      const newBal = await addAmountToGroup(Tezos, currentGroup, currentAmount);
+      setCurrentGroupAmount(newBal);
     } catch (err) {
       console.log("Unable to add to the group", err);
     } finally {
@@ -337,7 +333,7 @@ export default function UserDate() {
         <div className=" flex flex-row border-solid border-grey border-2 w-full">
           <div className="flex-col items-center w-full font-bold p-1 text-yellow text-web_large px-2">
             <div>{currentGroupName}</div>
-            <div>Current Balance: {currentGroupAmount} Tez</div>
+            <div>Current Balance: {currentGroupAmount}ꜩ</div>
           </div>
           <div className=" flex flex-row justify-end">
             <button

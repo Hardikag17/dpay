@@ -57,7 +57,6 @@ function App() {
   const [currentFriend, setCurrentFriend] = useState("");
   const [currentGroupName, setCurrentGroupName] = useState("");
   const [currentGroupAmount, setCurrentGroupAmount] = useState(0);
-  viewMethods(Tezos);
 
   return (
     <div className=" absolute h-screen w-screen">
