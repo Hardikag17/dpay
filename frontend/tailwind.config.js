@@ -25,6 +25,7 @@ module.exports = {
       small: ['12px'],
       web_normal: ['14px'],
       web_large: ['36px'],
+      web_extra_large: ['100px'],
       web_title: ['48px'],
       mobile_normal: ['10px'],
       mobile_large: ['24px'],

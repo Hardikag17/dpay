@@ -38,7 +38,7 @@ export default function Body() {
     setLoading(true);
 
     try {
-      const finalName = `${currentName}${currentTld}`;
+      const finalName = `${currentName}.${currentTld.toUpperCase()}`;
       const resolvedAddress = await client.resolver.resolveNameToAddress(
         `${currentName}.${currentTld}`
       );
