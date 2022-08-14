@@ -76,7 +76,7 @@ export default function UserDate() {
         newMessage: {
           name: m.name,
           message: m.message,
-          createdAt: m.date,
+          createdAt: m.createdAt,
           key: m.key,
         },
       });
@@ -94,7 +94,6 @@ export default function UserDate() {
       key = [currentFriend, userName].sort().join("");
     }
     console.log(key);
-    const messages = gun.get(key);
 
     dispatch({
       type: "new",
@@ -448,25 +447,81 @@ export default function UserDate() {
         </div>
       ) : (
         <div className="flex flex-col mx-5">
-          <div className="text-grey py-2 lg:px-2 text-small text-center w-full">
-            <div className="h-96 flex flex-wrap overflow-y-scroll snap snap-y snap-mandatory hide-scroll-bar justify-center w-full items-center mx-auto">
-              {state.messages.map((message, i) => (
-                <div
-                  className="flex-shrink-0 flex-col snap-always snap-center w-full mx-auto bg-white my-2 rounded-lg text-black"
-                  key={i}
-                >
-                  <div className=" flex flex-row space-x-4 ">
-                    <h3>From: {message.name}</h3>
-                    <p>Date: {message.createdAt}</p>
-                    <p>Key: {message.key}</p>
+          <div className="flex flex-col text-grey py-2 lg:px-2 text-small text-center w-full">
+            <div className="bg-black h-full flex flex-col justify-end overflow-y-scroll snap snap-y snap-mandatory hide-scroll-bar w-full ">
+              {state.messages.sort().map((message, i) => (
+                <div className="flex flex-row gap-x-2 my-2 mb-4">
+                  <div
+                    className={
+                      (message.name === userName ? " " : " ml-auto ") +
+                      " flex w-1/3 flex-col snap-always snap-center text-white"
+                    }
+                    key={i}
+                  >
+                    <div
+                      className={
+                        "flex flex-row justify-evenly space-x-4 border-2 border-yellow " +
+                        (message.name === userName
+                          ? "rounded-tr-3xl"
+                          : "rounded-tl-3xl")
+                      }
+                    >
+                      <p>{new Date(message.createdAt).toDateString()}</p>
+                      <p>{new Date(message.createdAt).toLocaleTimeString()}</p>
+                    </div>
+                    <div
+                      className={
+                        "justify-end border-2 border-yellow " +
+                        (message.name === userName
+                          ? "rounded-br-3xl"
+                          : "rounded-bl-3xl")
+                      }
+                    >
+                      <h2 className=" text-web_large">{message.message}</h2>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className=" text-web_large">{message.message}</h2>
-                  </div>
+
+                  {message.name !== userName ? (
+                    <div className="dropdown">
+                      <button
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        class="rounded-full grid place-content-center pr-2 w-16 h-16 text-white bg-black border-2 border-solid hover:border-dashed border-yellow text-web_large"
+                      >
+                        {message.name[0].toUpperCase()}
+                      </button>
+                      <ul
+                        className="
+          dropdown-menu
+          absolute
+          hidden
+          bg-white
+          text-base
+          z-50
+          py-2
+          list-none
+          flex
+          justify-center
+          rounded-lg
+          shadow-lg
+          mt-1
+          hidden
+          m-0
+          w-32
+          bg-clip-padding
+          border-none
+        "
+                        aria-labelledby="dropdownMenuButton1"
+                      >
+                        {message.name}
+                      </ul>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                 </div>
               ))}
             </div>
-            <i>Your Chats are end to end encrypted</i>
           </div>
           <div class="absolute bg-black rounded-full w-4/6 right-0 bottom-0 flex items-center border-2 border-solid border-grey shadow-xl">
             <input
