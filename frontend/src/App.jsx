@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import React, { Suspense, useState } from "react";
 //Components
-import Navbar from "./components/Navbar/navbar.jsx";
 import Body from "./components/Body/body.jsx";
 import Footer from "./components/Footer/footer.jsx";
 import Dashboard from "./components/Body/dashboard.jsx";
@@ -11,7 +10,6 @@ import { Tzip16Module } from "@taquito/tzip16";
 import { TaquitoTezosDomainsClient } from "@tezos-domains/taquito-client";
 import "tw-elements";
 import Register from "./components/Body/register.jsx";
-import { register, viewMethods } from "./utils/contract.js";
 
 const wallet = new BeaconWallet({
   name: "dPay",

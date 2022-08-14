@@ -1,5 +1,3 @@
-import { compact } from "@headlessui/react/dist/utils/render";
-
 export const viewMethods = async (tezos) => {
   const c = await tezos.wallet.at("KT1TbkHzj8DMKn2iaBmmacghPDrCiAcW5RYe");
   console.log(JSON.stringify(c.parameterSchema.ExtractSignatures()));
@@ -27,7 +25,6 @@ export const getFriends = async (tezos, name) => {
       })
     );
 
-    console.log(friendList);
     return friendList;
   } catch (err) {
     throw new Error(`Unable to fetch friends: ${err}`);
@@ -45,9 +42,9 @@ export const getGroups = async (tezos, name) => {
       s.user_groups.map(async (groupId) => {
         const group = await groupStorage.get(groupId);
         return {
-          groupId,
+          groupId: groupId.toNumber(),
           group_name: group.group_name,
-          balance: group.balance,
+          balance: group.balance.toNumber() / 1000000,
           group_friends: group.group_friends,
         };
       })

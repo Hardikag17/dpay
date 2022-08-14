@@ -13,7 +13,7 @@ import {
 import { connectionContext } from "../../App";
 
 export default function Dashboard() {
-  const { Tezos, userName, wallet, connected, client } =
+  const { Tezos, userName, connected, client } =
     useContext(connectionContext);
 
   const [currentName, setCurrentName] = useState("");

@@ -1,9 +1,7 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { connectionContext } from "../../App";
 
 export default function User({ state, groups, friends }) {
-  console.log(groups);
-  console.log(friends);
 
   const {
     setCurrentGroup,
@@ -14,7 +12,7 @@ export default function User({ state, groups, friends }) {
 
   const onGroup = (group) => {
     setCurrentGroup(group.groupId);
-    setCurrentGroupAmount(group.balance / 1000000);
+    setCurrentGroupAmount(group.balance);
     setCurrentGroupName(group.group_name);
     setCurrentFriend("");
   };

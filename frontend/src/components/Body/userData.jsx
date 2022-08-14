@@ -1,4 +1,10 @@
-import { useEffect, useState, useReducer, useContext } from "react";
+import {
+  useEffect,
+  useState,
+  useReducer,
+  useContext,
+  useCallback,
+} from "react";
 import Gun from "gun";
 import { connectionContext } from "../../App";
 import {
@@ -18,57 +24,28 @@ const initialState = {
 };
 
 // Create a reducer that will update the messages array
-function reducer(state, message) {
-  return {
-    messages: [message, ...state.messages],
-  };
+function reducer(state, action) {
+  let newState;
+  switch (action.type) {
+    case "add":
+      newState = { messages: [...state.messages, action.newMessage] };
+      break;
+    case "new":
+      newState = { messages: [] };
+      break;
+    default:
+      throw new Error("invalid action");
+  }
+  return newState;
 }
 
 export default function UserDate() {
   // the form state manages the form input for creating a new message
   const [formState, setForm] = useState({
-    name: "",
     message: "",
   });
 
   localStorage.clear();
-
-  // initialize the reducer & state for holding the messages array
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  // when the app loads, fetch the current messages and load them into the state
-  // this also subscribes to new KT1TbkHzj8DMKn2iaBmmacghPDrCiAcW5RYedata as it changes and updates the local state
-  useEffect(() => {
-    const messages = gun.get("messages");
-    messages.map().on((m) => {
-      dispatch({
-        name: m.name,
-        message: m.message,
-        createdAt: m.createdAt,
-      });
-    });
-  }, []);
-
-  // set a new message in gun, update the local state to reset the form field
-  function saveMessage() {
-    const messages = gun.get("messages");
-    messages.set({
-      name: formState.name,
-      message: formState.message,
-      createdAt: Date.now(),
-    });
-    setForm({
-      name: "",
-      message: "",
-    });
-  }
-
-  // update the form state as the user types
-  function onChange(e) {
-    setForm({ ...formState, [e.target.name]: e.target.value });
-  }
-
-  const [currentAmount, setCurrentAmount] = useState(0);
 
   const {
     Tezos,
@@ -77,8 +54,87 @@ export default function UserDate() {
     currentGroupAmount,
     currentGroupName,
     setCurrentGroupAmount,
-    wallet,
+    connected,
+    userName,
   } = useContext(connectionContext);
+
+  // initialize the reducer & state for holding the messages array
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  // when the app loads, fetch the current messages and load them into the state
+  // this also subscribes to new KT1TbkHzj8DMKn2iaBmmacghPDrCiAcW5RYedata as it changes and updates the local state
+
+  const fetchMess = useCallback((key) => {
+    const messages = gun.get(key);
+
+    messages.on((m) => console.log(m));
+
+    messages.map().once((m) => {
+      console.log(m);
+      dispatch({
+        type: "add",
+        newMessage: {
+          name: m.name,
+          message: m.message,
+          createdAt: m.date,
+          key: m.key,
+        },
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!connected) return;
+    if (currentGroup === -1 && currentFriend === "") return;
+
+    let key;
+    if (currentGroup !== -1) {
+      key = currentGroup.toString();
+    } else {
+      key = [currentFriend, userName].sort().join("");
+    }
+    console.log(key);
+    const messages = gun.get(key);
+
+    dispatch({
+      type: "new",
+    });
+
+    fetchMess(key);
+  }, [connected, currentFriend, currentGroup, userName, fetchMess]);
+
+  // set a new message in gun, update the local state to reset the form field
+  const saveMessage = useCallback(() => {
+    if (!connected) return;
+    if (currentGroup === -1 && currentFriend === "") return;
+
+    let key;
+    if (currentGroup !== -1) {
+      key = currentGroup.toString();
+    } else {
+      key = [currentFriend, userName].sort().join("");
+    }
+
+    const messages = gun.get(key);
+
+    messages.set({
+      name: userName,
+      message: formState.message,
+      createdAt: Date.now(),
+      key,
+    });
+
+    setForm({
+      message: "",
+    });
+  }, [connected, currentFriend, currentGroup, userName, formState]);
+
+  // update the form state as the user types
+  function onChange(e) {
+    setForm({ ...formState, [e.target.name]: e.target.value });
+  }
+
+  const [currentAmount, setCurrentAmount] = useState(0);
 
   const [loading, setLoading] = useState(false);
 
@@ -394,14 +450,15 @@ export default function UserDate() {
         <div className="flex flex-col mx-5">
           <div className="text-grey py-2 lg:px-2 text-small text-center w-full">
             <div className="h-96 flex flex-wrap overflow-y-scroll snap snap-y snap-mandatory hide-scroll-bar justify-center w-full items-center mx-auto">
-              {state.messages.map((message) => (
+              {state.messages.map((message, i) => (
                 <div
                   className="flex-shrink-0 flex-col snap-always snap-center w-full mx-auto bg-white my-2 rounded-lg text-black"
-                  key={message.createdAt}
+                  key={i}
                 >
                   <div className=" flex flex-row space-x-4 ">
                     <h3>From: {message.name}</h3>
                     <p>Date: {message.createdAt}</p>
+                    <p>Key: {message.key}</p>
                   </div>
                   <div>
                     <h2 className=" text-web_large">{message.message}</h2>
