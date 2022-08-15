@@ -388,14 +388,14 @@ export default function Dashboard() {
               </div>
             </div>
             {loading ? (
-              <div class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-evenly p-4 border-t border-gray-200 rounded-b-md">
+              <div className="modal-footer flex flex-shrink-0 flex-wrap items-center justify-evenly p-4 border-t border-gray-200 rounded-b-md">
                 <div
-                  class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                  className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
                   role="status"
                 />
               </div>
             ) : (
-              <div class="modal-footer flex flex-shrink-0 flex-wrap items-center justify-evenly p-4 border-t border-gray-200 rounded-b-md">
+              <div className="modal-footer flex flex-shrink-0 flex-wrap items-center justify-evenly p-4 border-t border-gray-200 rounded-b-md">
                 <button
                   type="button"
                   className="bg-red-500 hover:scale-105 cursor-pointer hover:brightness-125 rounded-xl lg:px-10 lg:py-3 p-3 text-black font-semibold lg:text-2xl text-xl text-center"
@@ -439,7 +439,7 @@ export default function Dashboard() {
           >
             <FontAwesomeIcon icon={faUser} />
           </button>
-          <button class="text-white font-bold text-mobile_large rounded-lg focus:outline-none w-24 h-12 flex items-center justify-center">
+          <button className="text-white font-bold text-mobile_large rounded-lg focus:outline-none w-24 h-12 flex items-center justify-center">
             .
           </button>
         </div>
@@ -474,7 +474,7 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
-        <div className="m-1 overflow-y-auto w-full h-full">
+        <div className="m-1 overflow-y-auto hide-scroll-bar w-full h-full">
           {!fetching ? (
             <User state={state} groups={groups} friends={friends} />
           ) : (
