@@ -134,7 +134,7 @@ export const withdraw = async (tezos, amount, group_id) => {
 
 export const transferAmountToFriend = async (tezos, friend_id, amount) => {
   try {
-    const c = await tezos.wallet.at("tz1WgR5wpmrvHYCroUFpgjypZ3CKqTZgMfUK");
+    const c = await tezos.wallet.at("KT1U14gj9VPNEhsZ3TbY79XPNYKgdHMyFM8p");
     const op = await c.methods
       .transferAmountToFriend(friend_id)
       .send({ amount });

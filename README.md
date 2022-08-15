@@ -74,7 +74,7 @@ yarn run dev
 
 ## Smart Contract
 
-- ERC4907: (KT1TbkHzj8DMKn2iaBmmacghPDrCiAcW5RYe)[https://jakartanet.tzkt.io/KT1TbkHzj8DMKn2iaBmmacghPDrCiAcW5RYe/operations/]
+- ERC4907: (KT1U14gj9VPNEhsZ3TbY79XPNYKgdHMyFM8p)[https://jakartanet.tzkt.io/KT1U14gj9VPNEhsZ3TbY79XPNYKgdHMyFM8p/operations/]
 
 
 ## 🙌 Team - **DTech**
