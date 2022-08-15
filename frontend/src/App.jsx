@@ -16,7 +16,7 @@ const wallet = new BeaconWallet({
   preferredNetwork: "jakartanet",
 });
 
-const Tezos = new TezosToolkit("https://jakartanet.tezos.marigold.dev/");
+const Tezos = new TezosToolkit("https://jakartanet.smartpy.io");
 Tezos.addExtension(new Tzip16Module());
 Tezos.setWalletProvider(wallet);
 

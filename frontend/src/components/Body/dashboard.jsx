@@ -13,8 +13,7 @@ import {
 import { connectionContext } from "../../App";
 
 export default function Dashboard() {
-  const { Tezos, userName, connected, client } =
-    useContext(connectionContext);
+  const { Tezos, userName, connected, client } = useContext(connectionContext);
 
   const [currentName, setCurrentName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -490,8 +489,10 @@ export default function Dashboard() {
           )}
         </div>
       </div>
-      <div className="w-4/6 border-2 border-solid border-grey ">
-        <UserData />
+      <div className="w-4/6 h-min border-2 border-solid border-grey overflow-y-auto">
+        <div className="h-5/6">
+          <UserData />
+        </div>
       </div>
     </div>
   );
