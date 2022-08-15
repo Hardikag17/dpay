@@ -15,7 +15,7 @@ import {
 
 // initialize gun locally
 const gun = Gun({
-  peers: ["http://localhost:5000/gun"],
+  peers: ["https://d-pay-tez.herokuapp.com/gun"],
 });
 
 // create the initial state to hold the messages
@@ -67,7 +67,7 @@ export default function UserDate() {
   const fetchMess = useCallback((key) => {
     const messages = gun.get(key);
 
-    messages.on((m) => console.log(m));
+    // messages.on((m) => console.log(m));
 
     messages.map().once((m) => {
       console.log(m);
@@ -94,6 +94,7 @@ export default function UserDate() {
       key = [currentFriend, userName].sort().join("");
     }
     console.log(key);
+    const messages = gun.get(key);
 
     dispatch({
       type: "new",
@@ -446,9 +447,9 @@ export default function UserDate() {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col mx-5">
+        <div className="flex flex-col mx-5 ">
           <div className="flex flex-col text-grey py-2 lg:px-2 text-small text-center w-full">
-            <div className="bg-black h-full flex flex-col justify-end overflow-y-scroll snap snap-y snap-mandatory hide-scroll-bar w-full ">
+            <div className="bg-black h-5/6 flex flex-col justify-end snap snap-y snap-mandatory w-full ">
               {state.messages.sort().map((message, i) => (
                 <div className="flex flex-row gap-x-2 my-2 mb-4">
                   <div
